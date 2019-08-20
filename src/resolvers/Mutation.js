@@ -38,6 +38,23 @@ const post = (root, args, context, info) => {
         postedBy: { connect: { id: userId }},
     });
 };
+
+const vote = async (root, args, context, info) => {
+    const userId = getUserId(context);
+
+    const linkExists = await context.prisma.$exists.vote({
+        user: { id: userId },
+        link: { id: args.linkId },
+    })
+    if(linkExists) {
+        throw new Error(`Already voted for link: ${args.linkId}`)
+    }
+
+    return context.prisma.createVote({
+        user: { connect: { id: userId }},
+        link: { connect: { id: args.linkId }},
+    });
+}
 const updateLink = (parent, args) => {
     links = links.map(link => link.id !== args.id ? link : args);
     return links.find(link => link.id === args.id)
@@ -52,6 +69,7 @@ module.exports = {
     post,
     login,
     signup,
+    vote,
     updateLink,
     deleteLink,
 }

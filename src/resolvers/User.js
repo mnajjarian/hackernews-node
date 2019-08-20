@@ -1,6 +1,4 @@
-const links = (root, args, context, info) => {
-    return context.prisma.user({ id: root.id }).links();
-};
+const links = (root, args, context, info) => context.prisma.user({ id: root.id }).links();
 
 module.exports = {
     links,
